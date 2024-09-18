@@ -17,60 +17,60 @@ import argparse
 warnings.filterwarnings("ignore")
 
 
-    
-    
-with open('model_DC.pkl', 'rb') as f:
+with open('rf_model.pkl', 'rb') as f:
     model= pickle.load(f)
 
-with open('columns.pkl', 'rb') as f:
+with open('sepsis_columns.pkl', 'rb') as f:
     model_columns= pickle.load(f)
-    
+
 def prediction(prediction_df):
-    model = pickle.load(open('model_DC.pkl', 'rb'))
+    model = pickle.load(open('rf_model.pkl', 'rb'))
     query= pd.DataFrame(prediction_df, index= [0])
     result=list(model.predict(query))
     final_result= round(result[0],3)
-    
+
     return final_result
 
 def values():
     #input_group("Sepsis Prediction")
     put_markdown(
-    
     '''
     Sepsis Prediction Web App
     '''
     , lstrip=True
     )
-    
+
     model_inputs= input_group(
-    "Sepsis Prediction",
-    [
-        select("Visit", name='visit', options= [('One', 1), ('Two', 2), ('Three', 3), ('Four', 4), ('Five', 5)]),
-        radio("What's your gender?", name='gender', options= [('Male', 1), ('Female', 0)]),
-        input("Your Age", name= 'age', type= FLOAT),
-        select("Hospital Outcome", name='outcome', options= [('Dead', 0), ('Alive', 1) ]),
-    ])
-    
-    prediction_df= pd.DataFrame(data= [[model_inputs[i] for i in ['visit', 'gender', 'age', 'outcome']]],
-                               columns= ['Visit', 'Your Gender', 'Age'])    
-   
-  
-        
-      
-  
-    
-    SepsisCategory= prediction(prediction_df)
-    #prediction_text=''
-    if SepsisCategory<=0:
-        put_markdown("You have sepsis")
-    
-    else:
-        put_markdown("No sepsis")
-    
+            "Sepsis Prediction",
+            [
+                        input("Your PRG", name= 'PRG', type= FLOAT),
+                        input("Your PL", name= 'PL', type= FLOAT),
+                        input("Your PR", name= 'PR', type= FLOAT),
+                        input("Your SK", name= 'SK', type= FLOAT),
+                        input("Your TS", name= 'TS', type= FLOAT),
+                        input("Your M11", name= 'M11', type= FLOAT),
+                        input("Your BD2", name= 'BD2', type= FLOAT),
+                        input("Your Age", name= 'age', type= FLOAT),
+                        select("Insurance type", name='Insurance', options= [('0', 0), ('1', 1)]),
+
+            ])
+
+            prediction_df= pd.DataFrame(data= [[model_inputs[i] for i in ['PRG', 'PL', 'PR', 'SK', 'TS', 'M11', 'BD2', 'age', 'Insurance']]],
+            columns= ['Your PRG', 'Your PL', 'Your PR', 'Your SK', 'Your TS', 'Your M11', 'Your BD2', 'Your age', 'Insurance type'])
+
+
+
+            SepsisCategory= prediction(prediction_df)
+            #prediction_text=''
+            if SepsisCategory<=0:
+                put_markdown("You have sepsis")
+
+            else:
+                put_markdown("No sepsis")
+
+
 if __name__== "__main__":
     try:
         values()
     except SessionClosedException:
         print("The session was closed unexpectedly")
-    
